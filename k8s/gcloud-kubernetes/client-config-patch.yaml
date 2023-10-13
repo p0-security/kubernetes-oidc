@@ -1,0 +1,14 @@
+spec:
+  authentication:
+  - name: oidc
+    oidc:
+      clientID: {clientId}
+      cloudConsoleRedirectURI: https://console.cloud.google.com/kubernetes/oidc
+      extraParams: prompt=consent
+      issuerURI: https://p0dev-ext.okta.com/oauth2/{audience}
+      kubectlRedirectURI: http://localhost:8000
+      scopes: openid,profile,email,groups,offline_access
+      userClaim: email
+      groupsClaim: groups
+      userPrefix: "okta:"
+      groupsPrefix: "okta:"
