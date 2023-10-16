@@ -1,12 +1,11 @@
-output "k8s_oidc_issuer_url" {
-  value = okta_auth_server.oidc_auth_server.issuer
-}
-
-output "k8s_oidc_client_id" {
-  value = okta_app_oauth.k8s_oidc_demo.client_id
-}
-
-# The "sub" claim 
-output k8s_oidc_username_claim {
-  value = "email"
+output oidc_config {
+  value = {
+    client_id       = okta_app_oauth.k8s_oidc_demo.client_id
+    client_secret   = "" # unused
+    issuer_url      = okta_auth_server.oidc_auth_server.issuer
+    user_claim      = "email"
+    groups_claim    = "groups"
+    prefix          = "okta:"
+    scopes          = ["openid", "profile", "email", "groups", "offline_access"]
+  }
 }

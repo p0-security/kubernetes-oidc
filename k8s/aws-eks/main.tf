@@ -72,11 +72,11 @@ resource "aws_eks_identity_provider_config" "oidc_demo_config" {
 
   oidc {
     identity_provider_config_name = "OidcDemoConfig"
-    client_id                     = var.k8s_oidc_client_id
-    issuer_url                    = var.k8s_oidc_issuer_url
-    username_claim                = var.k8s_oidc_username_claim
-    username_prefix               = var.k8s_oidc_username_prefix
-    groups_claim                  = var.k8s_oidc_groups_claim
-    groups_prefix                 = var.k8s_oidc_groups_prefix
+    client_id                     = var.oidc_config.client_id
+    issuer_url                    = var.oidc_config.issuer_url
+    username_claim                = var.oidc_config.user_claim
+    groups_claim                  = var.oidc_config.groups_claim
+    username_prefix               = var.oidc_config.prefix
+    groups_prefix                 = var.oidc_config.prefix
   }
 }

@@ -4,7 +4,7 @@ metadata:
   name: oidc-demo
 subjects:
 - kind: User
-  name: gergely.danyi@p0.dev
+  name: azure:gergely.danyi@p0.dev
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole

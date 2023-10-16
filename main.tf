@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "5.0" # TODO update to 5.19.0
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "2.43.0"
+    }
     google = {
       source  = "hashicorp/google"
       version = "5.0.0"
@@ -34,6 +38,11 @@ provider "aws" {
   region = "us-west-2"
 }
 
+# The provider will use credentials on you computer. 
+# Run `az login` to login as a  user account.
+# Use environment variable ARM_TENANT_ID to provide your Microsoft Entry tenant ID.
+provider "azuread" {}
+
 # The provider will use the default credentials of the environment. Run `gcloud auth application-default login` to login.
 # See https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference
 # Use environment variables to configure project and region.
@@ -44,22 +53,48 @@ provider "google" {}
 provider "google-beta" {}
 
 
-
 module "okta_oidc" {
   source = "./idp/okta-oidc"
 }
 
+module "azure_oidc" {
+  source = "./idp/azure-oidc"
+}
+
+module "google_oidc" {
+  source = "./idp/google-oidc"
+  oauth_client_id     = var.google_oidc_client_id
+  oauth_client_secret = var.google_oidc_client_secret
+}
+
+locals {
+  empty_config = {
+      client_id       = ""
+      client_secret   = ""
+      issuer_url      = ""
+      user_claim      = ""
+      groups_claim    = ""
+      prefix          = ""
+      scopes          = []
+  }
+
+  oidc_config = (
+    var.oidc_provider == "okta" ? 
+    module.okta_oidc.oidc_config : 
+    var.oidc_provider == "azure" ? 
+    module.azure_oidc.oidc_config : 
+    var.oidc_provider == "google" ? 
+    module.google_oidc.oidc_config : 
+    local.empty_config
+  )
+}
+
 module "aws_eks" {
   source = "./k8s/aws-eks"
-
-  k8s_oidc_client_id       = module.okta_oidc.k8s_oidc_client_id
-  k8s_oidc_issuer_url      = module.okta_oidc.k8s_oidc_issuer_url
-  k8s_oidc_username_claim  = module.okta_oidc.k8s_oidc_username_claim
-  k8s_oidc_username_prefix = "okta:"
-  k8s_oidc_groups_claim    = "groups"
-  k8s_oidc_groups_prefix   = "okta:"
+  oidc_config = local.oidc_config
 }
 
 module "gcloud_gke" {
   source = "./k8s/gcloud-gke"
+  oidc_config = local.oidc_config
 }
