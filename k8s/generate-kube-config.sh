@@ -1,27 +1,27 @@
 #!/bin/bash
 
 if [[ -z $cluster ]]
-  then echo Argument "cluster" is required
+  then echo Argument "cluster" is required; exit 1;
 fi
 
 if [[ -z $issuer ]]
-  then echo Argument "issuer" is required
+  then echo Argument "issuer" is required; exit 1;
 fi
 
 if [[ -z $client_id ]]
-  then echo Argument "client_id" is required
+  then echo Argument "client_id" is required; exit 1;
 fi
 
-if [[ -z $client_secret ]]
-  then echo Argument "client_secret" is required
-fi
+# if [[ -z $client_secret ]]
+#   then echo Argument "client_secret" is required; exit 1;
+# fi
 
 if [[ -z $server ]]
-  then echo Argument "server" is required
+  then echo Argument "server" is required; exit 1;
 fi
 
 if [[ -z $ca_data ]]
-  then echo Argument "ca_data" is required
+  then echo Argument "ca_data" is required; exit 1;
 fi
 
 envsubst <<EOF

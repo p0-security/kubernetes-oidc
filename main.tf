@@ -59,6 +59,7 @@ module "okta_oidc" {
 
 module "azure_oidc" {
   source = "./idp/azure-oidc"
+  security_groups = var.azure_oidc_security_groups
 }
 
 module "google_oidc" {

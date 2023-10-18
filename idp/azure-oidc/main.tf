@@ -2,18 +2,35 @@ resource "azuread_application" "azure_app_oauth" {
   display_name = "k8s OIDC demo"
 
   sign_in_audience="AzureADMyOrg"
-  group_membership_claims=["All"]
-  fallback_public_client_enabled=true
+  group_membership_claims=["ApplicationGroup"]
+  fallback_public_client_enabled=false
   api {
     requested_access_token_version = 2
   }
-  web {
+  public_client {
     redirect_uris = ["http://localhost:8000/"]
+  }
+
+  optional_claims {
+    access_token {
+      name                  = "groups"
+      additional_properties = ["cloud_displayname"]
+    }
+    id_token {
+      name                  = "groups"
+      additional_properties = ["cloud_displayname"]
+    }
   }
 }
 
-resource "azuread_application_password" "oauth_client_secret" {
-  application_object_id = azuread_application.azure_app_oauth.object_id
+data "azuread_service_principal" "app_principal" {
+  application_id = azuread_application.azure_app_oauth.application_id
 }
 
-# TODO how to include custom scopes/claims? The response doesn't contain email or user name, just a preferred_username...
+module "group_to_app_assignment" {
+  for_each = var.security_groups
+
+  source = "./assignment"
+  app_object_id = data.azuread_service_principal.app_principal.object_id
+  security_group_display_name = each.value
+}

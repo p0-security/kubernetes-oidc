@@ -1,15 +1,15 @@
 #!/bin/bash
 
 if [[ -z $cluster ]]
-  then echo Argument "cluster" is required
+  then echo Argument "cluster" is required; exit 1;
 fi
 
-if [[ -z $client_secret ]]
-  then echo Argument "client_secret" is required
-fi
+# if [[ -z $client_secret ]]
+#   then echo Argument "client_secret" is required; exit 1;
+# fi
 
 if [[ -z $scope ]]
-  then echo Argument "scope" is required
+  then echo Argument "scope" is required; exit 1;
 fi
 
 client_config=$(kubectl get clientconfig default -n kube-public -o json)
