@@ -12,6 +12,10 @@ terraform {
       source  = "hashicorp/azuread"
       version = "2.43.0"
     }
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "3.76.0"
+    }
     google = {
       source  = "hashicorp/google"
       version = "5.0.0"
@@ -42,6 +46,12 @@ provider "aws" {
 # Run `az login` to login as a  user account.
 # Use environment variable ARM_TENANT_ID to provide your Microsoft Entry tenant ID.
 provider "azuread" {}
+
+
+provider "azurerm" {
+  skip_provider_registration = "true"
+  features {}
+}
 
 # The provider will use the default credentials of the environment. Run `gcloud auth application-default login` to login.
 # See https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference
@@ -97,5 +107,10 @@ module "aws_eks" {
 
 module "gcloud_gke" {
   source = "./k8s/gcloud-gke"
+  oidc_config = local.oidc_config
+}
+
+module "azure_aks" {
+  source = "./k8s/azure-aks"
   oidc_config = local.oidc_config
 }
