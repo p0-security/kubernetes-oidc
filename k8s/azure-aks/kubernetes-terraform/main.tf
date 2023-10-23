@@ -15,6 +15,8 @@ provider "kubernetes" {
 
 locals {
   volume_name = "kube-oidc-proxy-tls"
+  dns_label = "aks-oidc-demo"
+  host_name = "${local.dns_label}.westus.cloudapp.azure.com"
 }
 
 resource "kubernetes_namespace" "kube_oidc" {
@@ -62,8 +64,9 @@ resource "tls_cert_request" "kube_oidc_tls_cert_request" {
   private_key_pem = tls_private_key.kube_oidc_tls_private_key.private_key_pem
 
   subject {
-    common_name  = "kube-oidc-proxy"
+    common_name  = local.host_name
   }
+  dns_names = [local.host_name]
 }
 
 resource "tls_locally_signed_cert" "kube_oidc_tls_cert" {
@@ -158,28 +161,29 @@ resource "kubernetes_deployment" "kube_oidc_proxy" {
             "--tls-private-key-file=/etc/oidc/tls/key.pem",
             "--oidc-issuer-url=https://accounts.google.com",
             "--oidc-client-id=403826425907-ijjghl5b1scc38lf8h10nak1u8tphsaj.apps.googleusercontent.com",
-            "--oidc-username-claim=email",
-            "--oidc-username-prefix=gcloud:",
-            "--oidc-groups-claim=groups",
-            "--oidc-groups-prefix=gcloud:",
+            "--oidc-username-claim=sub",
+            # "--oidc-username-prefix=google:",
+            # "--oidc-groups-claim=groups",
+            # "--oidc-groups-prefix=google:",
+            "-v=7",
             # {{- range .Values.oidc.requiredClaims }}
             # - "--oidc-required-claim={{ . }}"
             # {{- end }}
           ]
 
-          security_context {
-            allow_privilege_escalation = false
-            capabilities {
-              drop = ["ALL"]
-            }
-            privileged = false
-            run_as_group = 65534
-            run_as_non_root =  true
-            run_as_user = 65534
-            seccomp_profile {
-              type = "RuntimeDefault"
-            }
-          }
+          # security_context {
+          #   allow_privilege_escalation = false
+          #   capabilities {
+          #     drop = ["ALL"]
+          #   }
+          #   privileged = false
+          #   run_as_group = 65534
+          #   run_as_non_root =  true
+          #   run_as_user = 65534
+          #   seccomp_profile {
+          #     type = "RuntimeDefault"
+          #   }
+          # }
 
           resources {
             limits = {
@@ -278,50 +282,22 @@ resource "kubernetes_cluster_role_binding" "oidc_proxy_role_binding" {
 
 resource "kubernetes_service_v1" "oidc_proxy_service" {
   metadata {
-    name      = "kube-oidc-proxy-service"
-    namespace = kubernetes_namespace.kube_oidc.metadata[0].name
+    name        = "kube-oidc-proxy-service"
+    namespace   = kubernetes_namespace.kube_oidc.metadata[0].name
+    annotations = {
+      "service.beta.kubernetes.io/azure-dns-label-name" = local.dns_label
+    }
   }
   spec {
-    type = "NodePort"
+    type = "LoadBalancer"
     selector = {
       app = "kube-oidc"
-    }
-    port {
-      name = "metrics"
-      port = 8080
-      target_port = "metrics"
-      protocol    = "TCP"
     }
     port {
       name = "https"
       port = 443
       target_port = "https"
       protocol    = "TCP"
-    }
-  }
-}
-
-resource "kubernetes_ingress_v1" "oidc_proxy_ingress" {
-  metadata {
-    name      = "oidc-proxy-ingress"
-    namespace = kubernetes_namespace.kube_oidc.metadata[0].name
-    annotations = {
-      "kubernetes.io/ingress.class" = "azure/application-gateway"
-    }
-  }
-
-  spec {
-    # tls {
-    #   hosts = ["oidc-proxy.kube-oidc.svc.cluster.local"]
-    #   secret_name = kubernetes_secret.kube_oidc_proxy_tls.metadata[0].name
-    # }
-    default_backend {
-      service {
-        name = kubernetes_service_v1.oidc_proxy_service.metadata[0].name
-        port {
-          number = 443
-        }
-      }
     }
   }
 }

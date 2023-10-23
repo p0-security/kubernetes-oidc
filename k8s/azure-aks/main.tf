@@ -24,4 +24,9 @@ resource "azurerm_kubernetes_cluster" "aks_oidc_demo_cluster" {
 
   # Also allow regular RBAC for administering the cluster
   role_based_access_control_enabled   = true
+
+  ingress_application_gateway {
+    # This is a sub-range of the AKS Agent Pool's Virtual Network address prefixes '[10.224.0.0/12]'
+    subnet_cidr = "10.239.0.0/16"
+  }
 }
