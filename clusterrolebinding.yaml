@@ -3,8 +3,8 @@ kind: ClusterRoleBinding
 metadata:
   name: oidc-demo
 subjects:
-- kind: User
-  name: azure:gergely.danyi@p0.dev
+- kind: Group
+  name: {idp}:{group-name}
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole

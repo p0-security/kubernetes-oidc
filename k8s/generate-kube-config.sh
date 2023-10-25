@@ -24,11 +24,12 @@ if [[ -z $ca_data ]]
   then echo Argument "ca_data" is required; exit 1;
 fi
 
-envsubst <<EOF
-
+>2& echo <<EOF
 Distribute these commands to your developers:
 ---
+EOF
 
+envsubst <<EOF
 kubectl config set-credentials ${cluster} --exec-command=kubectl --exec-api-version=client.authentication.k8s.io/v1beta1 \\
 --exec-arg="oidc-login" \\
 --exec-arg="get-token" \\
