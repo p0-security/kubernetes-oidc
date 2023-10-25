@@ -22,3 +22,8 @@ variable google_oidc_client_id {
 variable google_oidc_client_secret {
   description = "The Client Secret of the OAuth application created in the GCloud console. Can be empty if the OIDC provider is not \"google\""
 }
+
+# JumpCloud OIDC
+variable jumpcloud_oidc_client_id {
+  description = "The Client Secret of the OAuth application created in the GCloud console. Can be empty if the OIDC provider is not \"google\""
+}

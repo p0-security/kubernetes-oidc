@@ -60,16 +60,10 @@ resource "google_container_cluster" "oidc_demo_gke_cluster" {
   }
   
   # Enable the identity service component. See https://cloud.google.com/kubernetes-engine/docs/how-to/oidc
+  # Run the manual steps in the scripts/ folder to configure the identity service with your provider
   identity_service_config {
     enabled = true
   }
-
-  # Expose the service gke-oidc-envoy to the internet by patching
-  # TODO this provisioner should run with credentials from the k8s cluster
-  provisioner "local-exec" {
-    command = "kubectl patch service gke-oidc-envoy -n anthos-identity-service --type merge --patch-file envoy-service-patch.yaml"
-    working_dir = "./k8s/gcloud-gke"
-  }    
 }
 
 # Separately manage node pool - we need a node pool because the Identity Service runs as a Kubernetes Deployment.
