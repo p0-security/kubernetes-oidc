@@ -4,7 +4,7 @@ metadata:
   name: oidc-demo
 subjects:
 - kind: Group
-  name: {idp}:{group-name}
+  name: {idp-prefix}:{group-name}
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole

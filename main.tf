@@ -68,6 +68,11 @@ module "google_oidc" {
   oauth_client_secret = var.google_oidc_client_secret
 }
 
+module "jumpcloud_oidc" {
+  source = "./idp/jumpcloud-oidc"
+  oauth_client_id     = var.jumpcloud_oidc_client_id
+}
+
 locals {
   empty_config = {
       client_id       = ""
@@ -86,13 +91,15 @@ locals {
     module.azure_oidc.oidc_config : 
     var.oidc_provider == "google" ? 
     module.google_oidc.oidc_config : 
+    var.oidc_provider == "jumpcloud" ? 
+    module.jumpcloud_oidc.oidc_config : 
     local.empty_config
   )
 }
 
 module "aws_eks" {
   source = "./k8s/aws-eks"
-  oidc_config = local.oidc_config
+  oidc_config = module.okta_oidc.oidc_config
 }
 
 module "gcloud_gke" {
