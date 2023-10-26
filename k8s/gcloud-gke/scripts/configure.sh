@@ -2,6 +2,7 @@
 
 # Execute this script after you have deployed the OIDC Identity Service with Terraform
 
+# Start parameter validation
 if [[ -z $issuer ]]
   then echo Argument "issuer" is required; exit 1;
 fi
@@ -27,6 +28,7 @@ fi
 if [[ -z $prefix ]]
   then echo Argument "prefix" is required; exit 1;
 fi
+# End parameter validation
 
 current_dir=$(dirname "$0")
 resource_dir=$current_dir/resources
@@ -35,6 +37,7 @@ resource_dir=$current_dir/resources
 kubectl patch service gke-oidc-envoy -n anthos-identity-service --type merge --patch-file $resource_dir/expose-envoy-service-patch.yaml
 
 # 2. Update the OIDC Configuration object with parameters from your IdP
+# If your IdP is Google Workspace, the secret is required, which is ensured by checking the issuer value during parameter validation
 if [[ -z $client_secret ]]; then
   envsubst < $(echo $resource_dir/client-config-patch.yaml) > $resource_dir/client-config-patch.yaml.tmp
 else

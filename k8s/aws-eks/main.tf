@@ -67,6 +67,7 @@ resource "aws_eks_cluster" "oidc_demo_cluster" {
 # Do not provision a node group - not required for interacting with the Kubernetes API server
 
 # Configure OIDC
+# If your IdP is Google Workspace: this block does not support specifying the client secret - however, it works without that as long as the kubectl client provides the secret
 resource "aws_eks_identity_provider_config" "oidc_demo_config" {
   cluster_name = aws_eks_cluster.oidc_demo_cluster.name
 

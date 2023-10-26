@@ -73,4 +73,6 @@ kubectl apply clusterrolebinding -f clusterrolebinding.yaml
 
 ## Sharing with Developers
 
-1. Run your CSP's corresponding kube-config generation script:
+Run your CSP's corresponding kube-config generation script in the `kubectl-client-config-script` folder:
+- `aws-eks.sh` if your k8s cluster is hosted on AWS' Elastic Kubernetes Service
+- `gcloud-gke.sh` if your k8s cluster is hosted on Google Cloud's Google Kubernetes Engine
