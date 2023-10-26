@@ -111,31 +111,3 @@ resource "google_compute_router_nat" "router_nat" {
     filter = "ERRORS_ONLY"
   }
 }
-
-
-  # The ClientConfig object must be updated after enabling identity service based on the OIDC config in the identity provider
-  # TODO this provisioner should run with credentials from the k8s cluster
-  resource "null_resource" "k8s_oidc_client_config_patch" {
-   
-    triggers = {
-      issuer       = var.oidc_config.issuer_url
-      client_id    = var.oidc_config.client_id
-      user_claim   = var.oidc_config.user_claim
-      groups_claim = var.oidc_config.groups_claim
-      prefix       = var.oidc_config.prefix
-    }
-
-    provisioner "local-exec" {
-      command = "./apply-client-config-patch.sh"
-      working_dir = "./k8s/gcloud-gke/client-config-patch"
-      environment = {
-        issuer       = var.oidc_config.issuer_url
-        client_id    = var.oidc_config.client_id
-        user_claim   = var.oidc_config.user_claim
-        groups_claim = var.oidc_config.groups_claim
-        prefix       = var.oidc_config.prefix
-      }
-    }
-
-  depends_on = [ google_container_cluster.oidc_demo_gke_cluster ]
-}

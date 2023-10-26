@@ -1,9 +1,9 @@
 # Select which OIDC provider is configured in the Kubernetes clusters
 variable oidc_provider {
   type = string
-  description = "okta | google | azure"
+  description = "okta | google | azure | jumpcloud"
   validation {
-    condition     = var.oidc_provider == "okta" || var.oidc_provider == "google" || var.oidc_provider == "azure"
+    condition     = var.oidc_provider == "okta" || var.oidc_provider == "google" || var.oidc_provider == "azure" || var.oidc_provider == "jumpcloud"
     error_message = "The OIDC provider can be one of: okta, google, azure"
   }
 }

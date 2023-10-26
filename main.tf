@@ -99,7 +99,7 @@ locals {
 
 module "aws_eks" {
   source = "./k8s/aws-eks"
-  oidc_config = module.okta_oidc.oidc_config
+  oidc_config = local.oidc_config
 }
 
 module "gcloud_gke" {
