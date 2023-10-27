@@ -1,11 +1,14 @@
 # Terraform configurations for using OIDC with Kubernetes
+
 This repo contains an example of using various Identity Providers (IdP)
+
 - Okta
 - Microsoft Entra ID
 - Google Workspace
 - JumpCloud
 
 to authenticate against managed Kubernetes services directly:
+
 - Kubernetes Engine (GCloud)
 - Elastic Kubernetes Service (AWS)
 
@@ -18,51 +21,56 @@ Assumptions: you already have a GKE (GCloud) or EKS (AWS) cluster that is provis
 Follow these steps to modify your existing cluster definition:
 
 1. Ensure that your IdP's Terraform provider is listed in your `terraform` block in the `required_providers` section. Follow your IdP's specific Terraform provider documentation to set this up.
-    - [Okta provider](https://registry.terraform.io/providers/okta/okta/latest/docs)
-    - [Microsoft Entra ID provider](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs)
-    - Google Workspace: provider not available TODO follow steps in blog post
-    - JumpCloud: provider not available TODO follow steps in blog post
+
+   - [Okta provider](https://registry.terraform.io/providers/okta/okta/latest/docs)
+   - [Microsoft Entra ID provider](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs)
+   - Google Workspace: provider not available TODO follow steps in blog post
+   - JumpCloud: provider not available TODO follow steps in blog post
 
 2. Copy your IdP's Terraform module from this repo into your Terraform repo root. Execute from this repo:
 
-        export TF_REPO_ROOT=changeme
-        export IDP=changeme # okta | azure | google | jumpcloud
-        cp -R idp-$IDP $TF_REPO_ROOT/k8s-oidc
-        cp main-idp-$IDP.tf $TF_REPO_ROOT/
+   ```sh
+   export TF_REPO_ROOT=changeme
+   export IDP=changeme # okta | azure | google | jumpcloud
+   cp -R idp-$IDP $TF_REPO_ROOT/k8s-oidc
+   cp main-idp-$IDP.tf $TF_REPO_ROOT/
+   ```
 
-    In addition:
-    - If **Google Workspace** is your IdP, define the input variables `google_oidc_client_id` and `google_oidc_client_secret` in your root Terraform module and provide these values after following the manual setup steps from setp 1.
-    - If **JumpCloud** is your IdP, define the input variable `jumpcloud_oidc_client_id` in your root Terraform module and provide these values after following the manual setup steps from step 1.
-    - If **Okta** or **Microsoft Entra ID** (formerly Azure AD) is your IdP, no additional steps
+   In addition: - If **Google Workspace** is your IdP, define the input variables `google_oidc_client_id` and `google_oidc_client_secret` in your root Terraform module and provide these values after following the manual setup steps from setp 1. - If **JumpCloud** is your IdP, define the input variable `jumpcloud_oidc_client_id` in your root Terraform module and provide these values after following the manual setup steps from step 1. - If **Okta** or **Microsoft Entra ID** (formerly Azure AD) is your IdP, no additional steps
 
 3. Change the Terraform module that declares your Kubernetes cluster
 
-      - If **GCloud** is your cloud provider:
+   - If **GCloud** is your cloud provider:
 
-          Add an `identity_service_config { enabled = true }` block to your `google_container_cluster` resource.
+     Add an `identity_service_config { enabled = true }` block to your `google_container_cluster` resource.
 
-      - If **AWS** is your cloud provider:
+   - If **AWS** is your cloud provider:
 
-        Identify which Terraform module contains your `aws_eks_cluster` resource. Execute from this repo:
+     Identify which Terraform module contains your `aws_eks_cluster` resource. Execute from this repo:
 
-            export TF_EKS_MODULE_FOLDER=changeme
-            cp k8s/aws/variables.tf $TF_EKS_MODULE_FOLDER/oidc-variables.tf
-            cp k8s/aws/oidc.tf $TF_EKS_MODULE_FOLDER/oidc.tf
+     ```
+     export TF_EKS_MODULE_FOLDER=changeme
+     cp k8s/aws/variables.tf $TF_EKS_MODULE_FOLDER/oidc-variables.tf
+     cp k8s/aws/oidc.tf $TF_EKS_MODULE_FOLDER/oidc.tf
+     ```
 
-        In your repo, edit the `cluster_name` property of the `aws_eks_identity_provider_config` resource in the copied `oidc.tf` file to point to your EKS cluster.
+     In your repo, edit the `cluster_name` property of the `aws_eks_identity_provider_config` resource in the copied `oidc.tf` file to point to your EKS cluster.
 
-        In your repo, in the declaration of your Terraform module that contains the `aws_eks_cluster`, wire the output variable of the IdP module to the input variable of your consumer module. E.g.:
+     In your repo, in the declaration of your Terraform module that contains the `aws_eks_cluster`, wire the output variable of the IdP module to the input variable of your consumer module. E.g.:
 
-            module "my_eks" {
-              source = "./my-eks-source"
-              oidc_config = module.k8s_oidc.oidc_config
-            }
+     ```
+     module "my_eks" {
+       source = "./my-eks-source"
+       oidc_config = module.k8s_oidc.oidc_config
+     }
+     ```
 
 4. Run `terraform init && terraform apply` in your repo to initialize and apply the new modules
-   
-    In addition:
-    - If **GCloud** is your cloud provider, follow the README in `k8s/gcloud` to configure your Kubernetes services with the parameters of your IdP.
-    - If **AWS** is your cloud provider, no additional steps
+
+   In addition:
+
+   - If **GCloud** is your cloud provider, follow the README in `k8s/gcloud` to configure your Kubernetes services with the parameters of your IdP.
+   - If **AWS** is your cloud provider, no additional steps
 
 ## ✋ Add Users to Your OIDC application
 
@@ -92,10 +100,14 @@ cp -R kubectl-config-script $TF_REPO_ROOT/kubectl-config-script
 
 - If **AWS** is your cloud provider, find the _cluster name_ and _region_ of your Kubernetes cluster in EKS. Make sure you are using an AWS CLI profile that has AWS permissions to describe the EKS cluster. Execute from your repo:
 
-       cluster=changeme region=changeme ./kubectl-config-script/aws-eks.sh
+  ```
+  cluster=changeme region=changeme ./kubectl-config-script/aws-eks.sh
+  ```
 
 - If **GCloud** is your cloud provider, make sure you are in a kube context that can read ClientConfig objects in the kube-public namespace. Execute from your repo (cluster name will only be used as the kube context name for OIDC access):
 
-        cluster=changeme ./kubectl-config-script/gcloud-gke.sh
+  ```
+  cluster=changeme ./kubectl-config-script/gcloud-gke.sh
+  ```
 
 The script prints the commands your developers have to run on their computer to set up OIDC access to the Kubernetes cluster.
