@@ -17,7 +17,7 @@ Assumptions: you already have a GKE (GCloud) or EKS (AWS) cluster that is provis
 
 Follow these steps to modify your existing cluster definition:
 
-1. Ensure you have a Terraform provider configured for your identity provider (IdP). Follow your IdP's specific Terraform provider documentation to set this up.
+1. Ensure you have a Terraform provider is listed in your `terraform for your identity provider (IdP). Follow your IdP's specific Terraform provider documentation to set this up.
     - [Okta provider](https://registry.terraform.io/providers/okta/okta/latest/docs)
     - [Microsoft Entra ID provider](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs)
     - Google Workspace: provider not available TODO follow steps in blog post
@@ -26,7 +26,7 @@ Follow these steps to modify your existing cluster definition:
 
         TF_REPO_ROOT=changeme
         IDP=changeme # okta | azure | google | jumpcloud
-        cp idp-$IDP $TF_REPO_ROOT/$IDP-oidc
+        cp -R idp-$IDP $TF_REPO_ROOT/$IDP-oidc
         cp main-idp-$IDP.tf $TF_REPO_ROOT/
 
     In addition:
@@ -42,9 +42,9 @@ Follow these steps to modify your existing cluster definition:
 
       - If **AWS** is your cloud provider:
 
-            TF_EKS_SOURCE=changeme
-            cp k8s/aws/variables.tf $TF_EKS_SOURCE/oidc-variables.tf
-            cp k8s/aws/oidc.tf $TF_EKS_SOURCE/oidc.tf
+            TF_EKS_MODULE_SOURCE_FOLDER=changeme
+            cp k8s/aws/variables.tf $TF_EKS_MODULE_SOURCE_FOLDER/oidc-variables.tf
+            cp k8s/aws/oidc.tf $TF_EKS_MODULE_SOURCE_FOLDER/oidc.tf
 
         Then edit the `cluster_name` property of the `aws_eks_identity_provider_config` resource in the copied `oidc.tf` file to point to your EKS cluster.
 
@@ -62,7 +62,7 @@ Follow these steps to modify your existing cluster definition:
     - If **AWS** is your cloud provider, no additional steps
 
 
-## ✋ Add Users to Your OIDC Provider
+## ✋ Add Users to Your OIDC application
 
 Depending on your IdP, you may need to assign users to your k8s OIDC application.
 
@@ -81,7 +81,13 @@ kubectl apply clusterrolebinding -f clusterrolebinding.yaml
 
 ## 💝 Share with Developers
 
-Run your cloud provider's corresponding kube-config generation script in the `kubectl-config-script` folder:
+Run your cloud provider's corresponding kube-config generation script in the `kubectl-config-script` folder. First copy the folder:
+
+```
+TF_REPO_ROOT=changeme
+cp $TF_REPO_ROOT
+```
+
 - If **AWS** is your cloud provider, find the _cluster name_ and _region_ of your Kubernetes cluster in EKS. Make sure you are using an AWS CLI profile that has AWS permissions to describe the EKS cluster. Pass the values to the script:
 
        cluster=changeme region=changeme ./kubectl-config-script/aws-eks.sh

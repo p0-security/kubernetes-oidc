@@ -7,7 +7,7 @@
 provider "okta" {}
 
 module "k8s_oidc" {
-  source = "./idp-okta"
+  source = "./okta-oidc"
 }
 
 output "oidc_config" {

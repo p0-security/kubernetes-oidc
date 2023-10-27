@@ -1,11 +1,11 @@
 variable "oauth_app_name" {
   type = string
-  default = "k8s OIDC demo app"
+  default = "k8s OIDC app"
 }
 
 variable "auth_server_name" {
   type = string
-  default = "k8s OIDC demo auth server"
+  default = "k8s auth server"
 }
 
 variable "group_regex_filter" {
