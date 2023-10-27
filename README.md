@@ -27,7 +27,7 @@ Follow these steps to modify your existing cluster definition:
 
         export TF_REPO_ROOT=changeme
         export IDP=changeme # okta | azure | google | jumpcloud
-        cp -r idp-$IDP $TF_REPO_ROOT/$IDP-oidc
+        cp -R idp-$IDP $TF_REPO_ROOT/$IDP-oidc
         cp main-idp-$IDP.tf $TF_REPO_ROOT/
 
     In addition:
