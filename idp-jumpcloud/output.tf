@@ -1,9 +1,7 @@
 output oidc_config {
   value = {
     client_id       = var.oauth_client_id
-    # Client secret should not be provided with clients that can't store one.
-    # JumpCloud supports PKCE without a client secret.
-    client_secret   = ""
+    client_secret   = "" # JumpCloud supports PKCE without a client secret.
     # Issuer URL from here: https://jumpcloud.com/support/sso-with-oidc
     issuer_url      = "https://oauth.id.jumpcloud.com"
     user_claim      = "email"

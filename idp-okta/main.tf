@@ -13,7 +13,7 @@ terraform {
 }
 
 resource "okta_app_oauth" "k8s_oidc_demo" {
-  label                      = "k8s OIDC demo"
+  label                      = var.oauth_app_name
   type                       = "native"
   token_endpoint_auth_method = "none"
   pkce_required              = true
@@ -31,7 +31,7 @@ resource "okta_app_oauth" "k8s_oidc_demo" {
 
 # Creates a claim for the auth server. See in Okta: Security -> API -> Authorization Servers -> k8s-auth -> Claims
 resource "okta_auth_server" "oidc_auth_server" {
-  name        = "k8s-auth"
+  name        = var.auth_server_name
   description = "OIDC auth server for k8s demo"
   audiences   = ["http://localhost:8000"]
 }
@@ -50,11 +50,10 @@ resource "okta_auth_server_claim" "groups_claim" {
   auth_server_id          = okta_auth_server.oidc_auth_server.id
   always_include_in_token = true
   claim_type              = "IDENTITY"
-  # Only add groups with the prefix k8s- to the claim. This is to avoid adding groups that are not related to Kubernetes.
-  group_filter_type       = "STARTS_WITH"
-  value                   = "k8s-"
-  value_type              = "GROUPS"
   scopes                  = [okta_auth_server_scope.groups_scope.name]
+  value_type              = "GROUPS"
+  group_filter_type       = "REGEX"
+  value                   = var.group_regex_filter
 }
 
 resource "okta_auth_server_policy" "auth_policy" {
