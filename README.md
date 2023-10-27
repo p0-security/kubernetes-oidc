@@ -85,7 +85,7 @@ Run your cloud provider's corresponding kube-config generation script in the `ku
 
 ```
 TF_REPO_ROOT=changeme
-cp kubectl-config-script $TF_REPO_ROOT/kubectl-config-script
+cp -R kubectl-config-script $TF_REPO_ROOT/kubectl-config-script
 ```
 
 - If **AWS** is your cloud provider, find the _cluster name_ and _region_ of your Kubernetes cluster in EKS. Make sure you are using an AWS CLI profile that has AWS permissions to describe the EKS cluster. Pass the values to the script:
