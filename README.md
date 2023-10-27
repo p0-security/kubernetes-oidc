@@ -22,6 +22,7 @@ Follow these steps to modify your existing cluster definition:
     - [Microsoft Entra ID provider](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs)
     - Google Workspace: provider not available TODO follow steps in blog post
     - JumpCloud: provider not available TODO follow steps in blog post
+
 2. Copy your IdP's Terraform module from this repo into your Terraform repo root:
 
         TF_REPO_ROOT=changeme
@@ -60,7 +61,6 @@ Follow these steps to modify your existing cluster definition:
     In addition:
     - If **GCloud** is your cloud provider, follow the README in `k8s/gcloud` to configure your Kubernetes services with the parameters of your IdP.
     - If **AWS** is your cloud provider, no additional steps
-
 
 ## ✋ Add Users to Your OIDC application
 
