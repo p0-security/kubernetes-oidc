@@ -1,3 +1,17 @@
+#!/bin/bash
+
+if [[ $(uname) = "Darwin" ]]; then
+  brew install kubelogin
+else
+  >&2 echo <<EOF
+In order to login to kubectl on this machine, first install krew:
+
+  https://github.com/kubernetes-sigs/krew
+EOF
+
+  kubectl krew install kubelogin
+fi
+
 kubectl config set-credentials ${cluster} --exec-command=kubectl --exec-api-version=client.authentication.k8s.io/v1beta1 \
 --exec-arg="oidc-login" \
 --exec-arg="get-token" \

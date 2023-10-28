@@ -95,19 +95,22 @@ Run your cloud provider's corresponding kube-config generation script in the `ku
 
 ```
 export TF_REPO_ROOT=changeme
-cp -R kubectl-config-script $TF_REPO_ROOT/kubectl-config-script
+cp -R kubectl-config-script $TF_REPO_ROOT/
 ```
 
 - If **AWS** is your cloud provider, find the _cluster name_ and _region_ of your Kubernetes cluster in EKS. Make sure you are using an AWS CLI profile that has AWS permissions to describe the EKS cluster. Execute from your repo:
 
   ```
-  cluster=changeme region=changeme ./kubectl-config-script/aws-eks.sh
+  cluster=changeme region=changeme ./kubectl-config-script/aws-eks.sh > setup-k8s-oidc.sh
+  chmod 755 setup-k8s-oidc.sh
   ```
 
 - If **GCloud** is your cloud provider, make sure you are in a kube context that can read ClientConfig objects in the kube-public namespace. Execute from your repo (cluster name will only be used as the kube context name for OIDC access):
 
   ```
-  cluster=changeme ./kubectl-config-script/gcloud-gke.sh
+  cluster=changeme ./kubectl-config-script/gcloud-gke.sh > setup-k8s-oidc.sh
+  chmod 755 setup-k8s-oidc.sh
   ```
 
-The script prints the commands your developers have to run on their computer to set up OIDC access to the Kubernetes cluster.
+Now distribute the `setup-k8s-oidc.sh` script to your developers. Note that the script will automatically install the kubelogin plugin for developers using MacOS; developers using
+Windows or Linux will need to install [krew](https://github.com/kubernetes-sigs/krew) prior to running this script.

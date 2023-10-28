@@ -34,9 +34,11 @@ fi
 
 current_dir=$(dirname "$0")
 
-echo Distribute these commands to your developers:
-echo "---"
-echo ""
+>&2 echo <<EOF
+Distribute these commands to your developers:
+---
+
+EOF
 
 # If your IdP is Google Workspace, the secret is required, which is ensured by checking the issuer value during parameter validation
 if [[ -z $client_secret ]]; then
