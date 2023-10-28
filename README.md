@@ -86,7 +86,7 @@ In order for users to access Kubernetes, you need to map them to cluster roles u
 Copy `clusterrolebinding.yaml` and edit to suit your needs, then:
 
 ```
-kubectl apply clusterrolebinding -f clusterrolebinding.yaml
+kubectl apply -f clusterrolebinding.yaml
 ```
 
 ## 💝 Share with Developers
