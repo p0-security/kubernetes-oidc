@@ -13,7 +13,8 @@ resource "aws_eks_identity_provider_config" "oidc_demo_config" {
     issuer_url                    = var.oidc_config.issuer_url
     username_claim                = var.oidc_config.user_claim
     groups_claim                  = var.oidc_config.groups_claim
-    username_prefix               = var.oidc_config.prefix
     groups_prefix                 = var.oidc_config.prefix
+    # Uncomment if you want to use the prefix for the username as well
+    # username_prefix               = var.oidc_config.prefix
   }
 }
