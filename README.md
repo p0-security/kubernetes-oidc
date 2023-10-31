@@ -36,7 +36,11 @@ Follow these steps to modify your existing cluster definition:
    cp main-idp-$IDP.tf $TF_REPO_ROOT/
    ```
 
-   In addition: - If **Google Workspace** is your IdP, define the input variables `google_oidc_client_id` and `google_oidc_client_secret` in your root Terraform module and provide these values after following the manual setup steps from setp 1. - If **JumpCloud** is your IdP, define the input variable `jumpcloud_oidc_client_id` in your root Terraform module and provide these values after following the manual setup steps from step 1. - If **Okta** or **Microsoft Entra ID** (formerly Azure AD) is your IdP, no additional steps
+   In addition:
+   
+   - If **Google Workspace** is your IdP, define the input variables `google_oidc_client_id` and `google_oidc_client_secret` in your root Terraform module and provide these values after following the manual setup steps from step 1.
+   - If **JumpCloud** is your IdP, define the input variable `jumpcloud_oidc_client_id` in your root Terraform module and provide these values after following the manual setup steps from step 1. 
+   - If **Okta** or **Microsoft Entra ID** (formerly Azure AD) is your IdP, no additional steps
 
 3. Change the Terraform module that declares your Kubernetes cluster
 
@@ -91,7 +95,7 @@ kubectl apply -f clusterrolebinding.yaml
 
 ## 💝 Share with Developers
 
-Run your cloud provider's corresponding kube-config generation script in the `kubectl-config-script` folder. Copy it into your repo as it reads the Terraform output:
+Run your cloud provider's corresponding kube-config generation script in the `kubectl-config-script` folder. Copy it into your repo because it reads the Terraform output. Execute from this repo:
 
 ```
 export TF_REPO_ROOT=changeme
