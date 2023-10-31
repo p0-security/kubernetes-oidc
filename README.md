@@ -83,16 +83,6 @@ Depending on your IdP, you may need to assign users to your k8s OIDC application
 - In Okta, Microsoft Entra, and JumpCloud, assign users and user groups to the application you created with Terraform
 - In Google Workspace all users are allowed to authenticate to your k8s cluster; you control access in your k8s authorization configuration
 
-## 🛂 Configure k8s Authorization
-
-In order for users to access Kubernetes, you need to map them to cluster roles using cluster role bindings.
-
-Copy `clusterrolebinding.yaml` and edit to suit your needs, then:
-
-```
-kubectl apply -f clusterrolebinding.yaml
-```
-
 ## 💝 Share with Developers
 
 Run your cloud provider's corresponding kube-config generation script in the `kubectl-config-script` folder. Copy it into your repo because it reads the Terraform output. Execute from this repo:
@@ -118,3 +108,13 @@ cp -R kubectl-config-script $TF_REPO_ROOT/
 
 Now distribute the `setup-k8s-oidc.sh` script to your developers. Note that the script will automatically install the kubelogin plugin for developers using MacOS; developers using
 Windows or Linux will need to install [krew](https://github.com/kubernetes-sigs/krew) prior to running this script.
+
+## 🛂 Configure k8s Authorization
+
+In order for users to access Kubernetes, you need to map them to cluster roles using cluster role bindings.
+
+Copy `clusterrolebinding.yaml` and edit to suit your needs, then:
+
+```
+kubectl apply -f clusterrolebinding.yaml
+```
