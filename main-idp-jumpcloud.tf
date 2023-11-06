@@ -1,5 +1,5 @@
 # variable jumpcloud_oidc_client_id {
-#   description = "The Client Secret of the OAuth application created in the GCloud console. Can be empty if the OIDC provider is not \"google\""
+#   description = "The Client ID of the SSO application created in the JumpCloud console.
 # }
 
 # module "k8s_oidc" {
